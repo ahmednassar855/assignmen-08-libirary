@@ -1,11 +1,11 @@
 import bcrypt from 'bcrypt'
-import asyncHandler from 'express-async-handler';
 import jwt from 'jsonwebtoken'
 import { userModel } from '../../../databases/models/user.model.js';
 import { sendEmail, sendEmailForResetPassword } from './../../emails/user.email.js';
+import { catchAsyncHandler } from './../../utlis/catchAsyncError.js';
 
 
-export const signUp = asyncHandler(async (req, res) => {
+export const signUp = catchAsyncHandler(async (req, res) => {
     const { name, email, age, phone, password, confirm_password } = req.body;
     let checkEmailIsExist = await userModel.findOne({ email });
     if (checkEmailIsExist) return res.json({ message: "This email is already reserved" })
@@ -16,7 +16,7 @@ export const signUp = asyncHandler(async (req, res) => {
     sendEmail({ email })
 })
 
-export const signIn = asyncHandler(async (req, res) => {
+export const signIn = catchAsyncHandler(async (req, res) => {
     const { email, password } = req.body;
     let userIsExist = await userModel.findOne({ email });
     if (!userIsExist || !(await bcrypt.compare(password, userIsExist.password))) {
@@ -28,7 +28,7 @@ export const signIn = asyncHandler(async (req, res) => {
     res.json({ message: "login successfully", token })
 })
 
-export const verifyUser = asyncHandler(async (req, res) => {
+export const verifyUser = catchAsyncHandler(async (req, res) => {
     let { token } = req.params;
     jwt.verify(token, process.env.JWT_KEY_EMAIL_CONFIRMATION, async function (err, decoded) {
         if (!err) {
@@ -40,19 +40,19 @@ export const verifyUser = asyncHandler(async (req, res) => {
     })
 })
 
-export const updateUserByUserId = asyncHandler(async (req, res) => {
-    const { age, name } = req.body;
-    let updatedUser = await userModel.findByIdAndUpdate({ _id: req.userId }, { age, name }, { new: true })
+export const updateUserByUserId = catchAsyncHandler(async (req, res) => {
+    const { age, name , phone} = req.body;
+    let updatedUser = await userModel.findByIdAndUpdate({ _id: req.userData._id }, { age, name , phone}, { new: true })
     res.json({ message: "updated user data sucessfully", updatedUser })
 })
 
-export const softDelete = asyncHandler ( async ( req , res ) => {
-    let updatedUser = await userModel.findByIdAndUpdate({ _id: req.userId }, { isVerified : false }, { new: true   , projection : { _id :0 , password :0}}  )
+export const softDelete = catchAsyncHandler ( async ( req , res ) => {
+    let updatedUser = await userModel.findByIdAndUpdate({ _id: req.userData._id }, { isVerified : false }, { new: true   , projection : { _id :0 , password :0}}  )
     res.json({ message: "user is de-avticated", updatedUser })
 } )
 
 
-export const forgetPassword = asyncHandler(async (req, res) => {
+export const forgetPassword = catchAsyncHandler(async (req, res) => {
     const { email } = req.body;
     let checkEmailIsExist = await userModel.findOne({ email });
     if (!checkEmailIsExist) return res.json({ message: "This email does not exist!!!" })
@@ -61,7 +61,7 @@ export const forgetPassword = asyncHandler(async (req, res) => {
 })
 
 
-export const passwordToReset = asyncHandler(async (req, res) => {
+export const passwordToReset = catchAsyncHandler(async (req, res) => {
     const { password , confirm_password} = req.body;
     let { token } = req.params;
     jwt.verify(token, process.env.JWT_KEY_EMAIL_CONFIRMATION, async function (err, decoded) {

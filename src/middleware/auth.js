@@ -7,8 +7,7 @@ export const isAuth = ( req , res  , next ) => {
         if ( err ){
             res.json({ err })
         }else {
-            req.userId = decoded.userIsExist._id ;   
-            console.log(req.userId);
+            req.userData = decoded.userIsExist ;  
             next()
         }
     }); 

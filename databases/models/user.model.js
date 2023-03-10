@@ -30,7 +30,12 @@ const userSchema = mongoose.Schema({
     isVerified: {
         type: Boolean,
         default: false
-    }
+    },
+    user_type: {
+        type: String,
+        enum: ['user', 'admin'],
+        default: 'user',
+    },
 
 } , { timestamps : true })
 

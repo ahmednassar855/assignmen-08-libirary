@@ -4,7 +4,6 @@ import jwt from 'jsonwebtoken';
 
 
 export const sendEmail = async (options) => {
-
     let token = jwt.sign({email : options.email} , process.env.JWT_KEY_EMAIL_CONFIRMATION)
     let transporter = nodemailer.createTransport({
         service: "gmail", 
@@ -25,7 +24,6 @@ export const sendEmail = async (options) => {
 
 
 export const sendEmailForResetPassword = async (options) => {
-
     let token = jwt.sign({email : options.email} , process.env.JWT_KEY_EMAIL_CONFIRMATION)
     let transporter = nodemailer.createTransport({
         service: "gmail", 
