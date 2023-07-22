@@ -1,2 +1,2 @@
 # user name , email , password , phone
-# books title , descritpnio , category , isReserved
+# books title , description , category , isReserved
